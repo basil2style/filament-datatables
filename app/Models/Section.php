@@ -10,4 +10,9 @@ class Section extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'class_id'];
+
+    public function classes()
+    {
+        return $this->belongsTo(Classes::class, 'class_id');
+    }
 }
