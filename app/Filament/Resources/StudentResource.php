@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\SutdentExport;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource\RelationManagers;
 use App\Models\Section;
@@ -12,9 +13,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentResource extends Resource
@@ -37,7 +40,7 @@ class StudentResource extends Resource
                     $classId = $get('class_id');
 
                     if ($classId) {
-                        return Section::where('class_id', $classId)->pluck('name', 'id')->toArray(); 
+                        return Section::where('class_id', $classId)->pluck('name', 'id')->toArray();
                     }
                 })
             ]);
@@ -54,10 +57,10 @@ class StudentResource extends Resource
                 TextColumn::make('address')->sortable()->searchable()->wrap(),
                 TextColumn::make('classes.name')->sortable()->searchable(),
                 TextColumn::make('section.name')->sortable()->searchable(),
-                TextColumn::make('created_at')->date()->sortable(),  
+                TextColumn::make('created_at')->date()->sortable(),
                 TextColumn::make('updated_at')->date()->sortable(),
 
-                
+
             ])
             ->filters([
                 //
@@ -68,6 +71,11 @@ class StudentResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    BulkAction::make('export')
+                        ->label('Export Selected')
+                        ->icon('heroicon-o-trash')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records) => (new SutdentExport($records))->download('students.xlsx'))
                 ]),
             ]);
     }
