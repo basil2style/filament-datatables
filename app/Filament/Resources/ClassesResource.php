@@ -6,10 +6,12 @@ use App\Filament\Resources\ClassesResource\Pages;
 use App\Filament\Resources\ClassesResource\RelationManagers;
 use App\Models\Classes;
 use Filament\Forms;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -34,6 +36,8 @@ class ClassesResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name'),
+                TextColumn::make('sections.name'),
+                TextColumn::make('students_count')->counts('students'),
                 TextColumn::make('created_at')
                     ->dateTime(),
                 TextColumn::make('updated_at')
